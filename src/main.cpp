@@ -111,7 +111,8 @@ void NormalKey(unsigned char key, int x, int y)
 	{
 		//Saving Settings and Exit
 		LogInfo("Saving settings and exit.");
-		glutLeaveMainLoop();
+		exit(1);
+		//glutLeaveMainLoop();
 	}
 	break;
 
@@ -191,10 +192,14 @@ int main(int argc, char* argv[]) {
 	glutMouseFunc(MousePress);
 	glutPassiveMotionFunc(MousePassiveMove);
 	glutMotionFunc(MouseMove);
-	glutMouseWheelFunc(MouseWheel);
+	//glutMouseWheelFunc(MouseWheel);
 	glutKeyboardFunc(NormalKey);
 	glutSpecialFunc(SpecialKey);
+#ifdef PS_OS_MAC
+	glutWMCloseFunc(closeApp);
+#else
 	glutCloseFunc(closeApp);
+#endif	
 	glutIdleFunc(timestep);
 
 	//Setup Shading Environment

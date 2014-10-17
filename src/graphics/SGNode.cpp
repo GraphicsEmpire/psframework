@@ -36,7 +36,7 @@ namespace PS {
         }
 
         void SGNode::resetTransform() {
-            if(m_spTransform == NULL)
+            if(m_spTransform == nullptr)
                 m_spTransform = SmartPtrSGTransform(new SGTransform());
             else
                 m_spTransform->reset();

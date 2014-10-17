@@ -14,14 +14,14 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/gl.h>
-#include "GL/glu.h"
+#include <GL/glu.h>
 
 #elif PS_OS_MAC
 
 #include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <GLUT/glut.h>
 #include <OpenGL/gl.h>
-#include "OpenGL/glu.h"
+#include <OpenGL/glu.h>
 
 #endif
 
