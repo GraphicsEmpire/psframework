@@ -1,6 +1,6 @@
 //Phong Vertex Shader
 //#version 330 core
-#version 120
+//#version 120
 varying vec3 N;
 varying vec3 V;
 varying vec2 T;

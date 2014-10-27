@@ -13,7 +13,7 @@
 #include "graphics/Gizmo.h"
 #include "graphics/AppScreen.h"
 #include "graphics/selectgl.h"
-
+#include "graphics/SGBox.h"
 
 using namespace PS;
 using namespace PS::SG;
@@ -37,6 +37,15 @@ void MousePress(int button, int state, int x, int y)
 {
     TheGizmoManager::Instance().mousePress(button, state, x, y);
     TheSceneGraph::Instance().mousePress(button, state, x, y);
+
+    // Wheel reports as button 3(scroll up) and button 4(scroll down)
+	if ((button == 3) || (button == 4)) {
+		// Each wheel event reports like a button click, GLUT_DOWN then GLUT_UP
+		if (state == GLUT_UP)
+			return; // Disregard redundant GLUT_UP events
+
+		TheSceneGraph::Instance().mouseWheel(button, (button==3)? 1 : -1, x, y);
+	}
 
     //Update selection
 	glutPostRedisplay();
@@ -175,7 +184,7 @@ void SpecialKey(int key, int x, int y)
 
 
 void closeApp() {
-
+	LogInfo("closing app");
 }
 
 
@@ -184,7 +193,11 @@ int main(int argc, char* argv[]) {
 
 	//Initialize app
 	glutInit(&argc, argv);
+#ifdef PS_OS_MAC
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
+#else
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
+#endif
 	glutInitWindowSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	glutCreateWindow("OpenGL Framework");
 	glutDisplayFunc(draw);
@@ -202,42 +215,8 @@ int main(int argc, char* argv[]) {
 #endif	
 	glutIdleFunc(timestep);
 
-	//Setup Shading Environment
-	static const GLfloat lightColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	static const GLfloat lightPos[4] = { 0.0f, 9.0f, 0.0f, 1.0f };
-
-	//Setup Light0 Position and Color
-	glLightfv(GL_LIGHT0, GL_AMBIENT, lightColor);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-
-	//Turn on Light 0
-	glEnable(GL_LIGHT0);
-	//Enable Lighting
-	glEnable(GL_LIGHTING);
-
-	//Enable features we want to use from OpenGL
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_POLYGON_SMOOTH);
-	glEnable(GL_LINE_SMOOTH);
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-	//glClearColor(0.45f, 0.45f, 0.45f, 1.0f);
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-
-	//Compiling shaders
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
-	{
-		//Problem: glewInit failed, something is seriously wrong.
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-		exit(1);
-	}
+	//init gl
+	def_initgl();
 
 	//Build Shaders for drawing the mesh
 	AnsiStr strRoot = ExtractOneLevelUp(ExtractFilePath(GetExePath()));
@@ -249,6 +228,12 @@ int main(int argc, char* argv[]) {
 	//Ground and Room
 	TheSceneGraph::Instance().addFloor(32, 32, 0.5f);
 	TheSceneGraph::Instance().addSceneBox(AABB(vec3f(-10, -10, -16), vec3f(10, 10, 16)));
+
+	//box
+	SGBox* abox = new SGBox();
+	TheGizmoManager::Instance().setFocusedNode(abox);
+	TheSceneGraph::Instance().add(abox);
+
 
 
 	glutMainLoop();
