@@ -230,9 +230,25 @@ int main(int argc, char* argv[]) {
 	TheSceneGraph::Instance().addSceneBox(AABB(vec3f(-10, -10, -16), vec3f(10, 10, 16)));
 
 	//box
-	SGBox* abox = new SGBox();
-	TheGizmoManager::Instance().setFocusedNode(abox);
-	TheSceneGraph::Instance().add(abox);
+	Geometry g1;
+	g1.addCube(vec3f(0.0, 0.0, 0.0), 1.0);
+	g1.colors().clear();
+
+	//color
+	float r = RandRangeT<float>(0.0, 1.0);
+	float g = RandRangeT<float>(0.0, 1.0);
+	float b = RandRangeT<float>(0.0, 1.0);
+	g1.addPerVertexColor(vec4f(r, g, b, 1.0f));
+	SGMesh* acube = new SGMesh(g1);
+	if(TheShaderManager::Instance().has("phong"))
+		acube->setEffect(SmartPtrSGEffect(new SGEffect(TheShaderManager::Instance().get("phong"))));
+
+	acube->transform()->setTranslate(vec3f(0, 1, 0));
+
+
+	TheSceneGraph::Instance().add(acube);
+	TheGizmoManager::Instance().setFocusedNode(acube);
+
 
 
 
