@@ -189,7 +189,7 @@ void closeApp() {
 
 
 int main(int argc, char* argv[]) {
-	cout << "Cutting tets" << endl; // prints !!!Hello World!!!
+    cout << "OpenGL Framework - Pourya Shirazian" << endl;
 
 	//Initialize app
 	glutInit(&argc, argv);
@@ -223,7 +223,11 @@ int main(int argc, char* argv[]) {
 	AnsiStr strShaderRoot = strRoot + "data/shaders/";
 
 	//Load Shaders
-	TheShaderManager::Instance().addFromFolder(strShaderRoot.cptr());
+    LogInfoArg1("Look for shaders in: %s", strShaderRoot.cptr());
+    int count = TheShaderManager::Instance().addFromFolder(strShaderRoot.cptr());
+    if(count == 0) {
+        LogError("Unable to find any shaders in that path");
+    }
 
 	//Ground and Room
 	TheSceneGraph::Instance().addFloor(32, 32, 0.5f);

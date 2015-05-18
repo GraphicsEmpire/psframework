@@ -132,14 +132,21 @@ namespace PS {
             if(TheShaderManager::Instance().has("gizmo")) {
                 m_spEffect = SmartPtrSGEffect(new GizmoEffect(TheShaderManager::Instance().get("gizmo")));
             }
+            else
+                m_spEffect = NULL;
             
             this->setAxis(axisX);
         }
         
         void GizmoTranslate::draw() {
+            if(m_spEffect == NULL)
+                return;
+
             glClear(GL_DEPTH_BUFFER_BIT);
 
-            m_spTransform->bind();
+            if(m_spTransform)
+                m_spTransform->bind();
+
             GizmoEffect* peff = dynamic_cast<GizmoEffect*>(m_spEffect.get());
             peff->bind();
             
@@ -156,7 +163,9 @@ namespace PS {
             m_z.drawNoEffect();
             
             m_spEffect->unbind();
-            m_spTransform->unbind();
+
+            if(m_spTransform)
+                m_spTransform->unbind();
         }
         
         
